@@ -8,6 +8,7 @@ import 'models/allowance_model.dart';
 import 'models/spend_model.dart';
 import 'screens/card_list_screen.dart';
 import 'screens/spend_history_screen.dart';
+import 'screens/trade_card_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -143,7 +144,11 @@ class MyApp extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: textColor),
       ),
-      home: CardListScreen(),
+      // ⭐ ここを追加
+      routes: {
+        '/': (context) => CardListScreen(),
+        '/trade': (context) => TradeCardScreen(),
+      },
     );
   }
 }

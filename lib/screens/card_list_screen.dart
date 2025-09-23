@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:hive/hive.dart';
 import ' allowance_screen.dart';
+import 'trade_card_screen.dart';
 
 class CardListScreen extends StatefulWidget {
   @override
@@ -189,6 +190,16 @@ class _CardListScreenState extends State<CardListScreen> {
               });
             },
             color: _showWishlistOnly ? Colors.yellow : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.swap_horiz), // ← 追加
+            tooltip: 'トレードカード画面',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => TradeCardScreen()),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.add),
