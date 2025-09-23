@@ -9,6 +9,7 @@ import 'models/spend_model.dart';
 import 'screens/card_list_screen.dart';
 import 'screens/spend_history_screen.dart';
 import 'screens/trade_card_screen.dart';
+import 'models/purchase_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,7 @@ void main() async {
   if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(CardModelAdapter());
   if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(AllowanceAdapter());
   if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(SpendAdapter());
+  if (!Hive.isAdapterRegistered(3)) Hive.registerAdapter(PurchaseAdapter());
 
   // Box 開封（try-catch で安全に）
   Box<CardModel> cardBox;
