@@ -1,36 +1,43 @@
 #!/bin/bash
-# ========================================================
-# Flutter + iOS (Xcode) キャッシュ完全クリア & ビルドスクリプト
-# ========================================================
+set -e
 
-set -e  # エラーで停止
+echo "=== Flutter & Xcode 完全クリーン & iOSビルド開始 ==="
 
-echo "🚀 Starting clean & build process..."
+# 1. Xcodeを終了
+echo "→ Xcodeを終了してください（手動で）"
 
-# 1️⃣ Xcode DerivedData を丸ごと削除
-echo "🧹 Cleaning Xcode DerivedData..."
-rm -rf ~/Library/Developer/Xcode/DerivedData/*
-rm -rf ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/*
-rm -f ~/Library/Developer/Xcode/DerivedData/Session.modulevalidation
-rm -rf ~/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/*
+# 2. DerivedData の完全削除
+echo "→ DerivedData を削除"
+DERIVED_DATA="$HOME/Library/Developer/Xcode/DerivedData"
+if [ -d "$DERIVED_DATA" ]; then
+    rm -rf "$DERIVED_DATA"
+    echo "Deleted DerivedData"
+else
+    echo "DerivedData は存在しません"
+fi
 
-# 2️⃣ Flutter clean
-echo "🧹 Running flutter clean..."
+# 3. Flutter キャッシュ削除
+echo "→ Flutter キャッシュ削除"
 flutter clean
-
-# 3️⃣ Flutter pub get
-echo "📦 Fetching Flutter dependencies..."
 flutter pub get
 
-# 4️⃣ CocoaPods 再インストール
-echo "📀 Reinstalling iOS pods..."
-cd ios
-pod deintegrate
-pod install
-cd ..
+# 4. Pods の完全削除と再インストール
+if [ -d "ios" ]; then
+    echo "→ Pods を再構築"
+    cd ios
+    if [ -f "Podfile.lock" ]; then
+        pod deintegrate
+        rm -rf Pods Podfile.lock
+        echo "Pods & Podfile.lock を削除"
+    fi
+    pod install
+    cd ..
+else
+    echo "ios ディレクトリが存在しません"
+fi
 
-# 5️⃣ Flutter build iOS
-echo "⚡ Building iOS app..."
+# 5. iOSビルド（署名不要テスト用）
+echo "→ Flutter iOS ビルド開始（--no-codesign）"
 flutter build ios --no-codesign
 
-echo "✅ Cleanup & Build Complete!"
+echo "=== 完全クリーン & ビルド完了 ==="

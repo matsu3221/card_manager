@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import '../models/card_model.dart';
-import 'card_add_screen.dart'; // ← これが必要
+import 'card_add_screen.dart';
 import ' allowance_screen.dart';
 
 class CardListScreen extends StatefulWidget {
@@ -187,19 +187,17 @@ class _CardListScreenState extends State<CardListScreen>
                           child: imageFile != null
                               ? Image.file(
                                   imageFile,
-                                  width: 70,
-                                  height: 70,
-                                  fit: BoxFit.cover,
-                                  key: ValueKey(
-                                    '${card.imagePath}_${DateTime.now().millisecondsSinceEpoch}',
-                                  ),
+                                  width: double.infinity, // 横幅いっぱい
+                                  height: 250, // 高さを広めに
+                                  fit: BoxFit.contain, // カードの比率を保って表示
                                 )
                               : Container(
-                                  width: 70,
-                                  height: 70,
+                                  width: double.infinity,
+                                  height: 250,
                                   color: Colors.grey[300],
                                   child: const Icon(
-                                    Icons.image_not_supported,
+                                    Icons.image,
+                                    size: 80,
                                     color: Colors.grey,
                                   ),
                                 ),

@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
     const backgroundColor = Colors.black; // 背景黒
     const textColor = Colors.white; // 文字白
     const appBarColor = Colors.white; // AppBar白
-
+    const goldColor = Color(0xFFFFD700);
     print('🧱 MyApp.build 実行');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -106,23 +106,26 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: textColor, fontSize: 16),
           bodyLarge: TextStyle(color: textColor, fontSize: 18),
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: appBarColor,
-          foregroundColor: textColor,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white54,
+          iconTheme: IconThemeData(color: Colors.white54),
           titleTextStyle: TextStyle(
             fontFamily: 'Cinzel Decorative',
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Colors.white54,
           ),
-          iconTheme: IconThemeData(color: Colors.black),
         ),
         cardTheme: const CardThemeData(
           color: Color(0xFF1E1E1E),
           elevation: 3,
           margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+            borderRadius: BorderRadius.zero,  // ←ここ！
           ),
         ),
         listTileTheme: const ListTileThemeData(
@@ -131,8 +134,8 @@ class MyApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: appBarColor,
-            foregroundColor: backgroundColor,
+            backgroundColor: Colors.black,
+            foregroundColor: goldColor,
             textStyle: const TextStyle(
               fontSize: 16,
               fontFamily: 'Cinzel Decorative',
@@ -144,7 +147,6 @@ class MyApp extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
-        iconTheme: const IconThemeData(color: textColor),
       ),
       // ⭐ ここを追加
       routes: {

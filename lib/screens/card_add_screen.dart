@@ -134,12 +134,17 @@ class _CardAddScreenState extends State<CardAddScreen> {
               GestureDetector(
                 onTap: _pickImage,
                 child: _imageFile != null
-                    ? Image.file(_imageFile!, width: 150, height: 150)
+                    ? Image.file(
+                        _imageFile!,
+                        width: double.infinity, // 横幅いっぱい
+                        height: 250, // 高さも広めに
+                        fit: BoxFit.contain, // カード比率を保つ
+                      )
                     : Container(
-                        width: 150,
-                        height: 150,
+                        width: double.infinity,
+                        height: 250,
                         color: Colors.grey[300],
-                        child: const Icon(Icons.image, size: 50),
+                        child: const Icon(Icons.image, size: 80),
                       ),
               ),
               const SizedBox(height: 16),

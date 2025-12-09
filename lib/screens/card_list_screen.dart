@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:hive/hive.dart';
 import ' allowance_screen.dart';
 import 'trade_card_screen.dart';
+import 'card_bulk_add_screen.dart';
 
 class CardListScreen extends StatefulWidget {
   @override
@@ -223,9 +224,136 @@ class _CardListScreenState extends State<CardListScreen> {
               );
             },
           ),
+          // AppBar 内に「まとめて追加」アイコンを追加
+          // 旧 _showBulkAddDialog() の呼び出し部分を以下に置き換え
+          IconButton(
+            icon: const Icon(Icons.playlist_add),
+            tooltip: 'まとめてカード追加',
+            onPressed: () async {
+              // 画像付きまとめて追加画面に遷移
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CardBulkAddWithImageScreen(),
+                ),
+              );
+
+              // 画面から戻ってきた結果をHiveに保存
+              if (result != null && result is List<CardModel>) {
+                for (var card in result) {
+                  await _cardBox.put(card.id, card);
+                }
+                await _refreshCards();
+              }
+            },
+          ),
         ],
       );
     }
+  }
+
+  void _showBulkAddDialog() {
+    final List<TextEditingController> nameControllers = [];
+    final List<TextEditingController> descControllers = [];
+    final List<TextEditingController> priceControllers = [];
+    final List<TextEditingController> sourceControllers = [];
+
+    const int rows = 5; // 一度に入力できる行数
+
+    for (int i = 0; i < rows; i++) {
+      nameControllers.add(TextEditingController());
+      descControllers.add(TextEditingController());
+      priceControllers.add(TextEditingController());
+      sourceControllers.add(TextEditingController());
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('まとめてカード追加'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columnSpacing: 12,
+                columns: const [
+                  DataColumn(label: Text('名前')),
+                  DataColumn(label: Text('説明')),
+                  DataColumn(label: Text('価格')),
+                  DataColumn(label: Text('入手先')),
+                ],
+                rows: List.generate(rows, (i) {
+                  return DataRow(
+                    cells: [
+                      DataCell(
+                        TextField(
+                          controller: nameControllers[i],
+                          decoration: const InputDecoration(hintText: 'カード名'),
+                        ),
+                      ),
+                      DataCell(
+                        TextField(
+                          controller: descControllers[i],
+                          decoration: const InputDecoration(hintText: '説明'),
+                        ),
+                      ),
+                      DataCell(
+                        TextField(
+                          controller: priceControllers[i],
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(hintText: '価格'),
+                        ),
+                      ),
+                      DataCell(
+                        TextField(
+                          controller: sourceControllers[i],
+                          decoration: const InputDecoration(hintText: '入手先'),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('キャンセル'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                for (int i = 0; i < rows; i++) {
+                  final name = nameControllers[i].text.trim();
+                  final desc = descControllers[i].text.trim();
+                  final priceText = priceControllers[i].text.trim();
+                  final source = sourceControllers[i].text.trim();
+
+                  if (name.isNotEmpty || desc.isNotEmpty) {
+                    final card = CardModel(
+                      id: (DateTime.now().millisecondsSinceEpoch + i)
+                          .toString(),
+                      name: name,
+                      description: desc,
+                      price: priceText.isNotEmpty
+                          ? int.tryParse(priceText)
+                          : null,
+                      source: source.isNotEmpty ? source : null,
+                    );
+                    await _cardBox.put(card.id, card);
+                  }
+                }
+                await _refreshCards();
+                Navigator.pop(context);
+              },
+              child: const Text('保存'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -251,17 +379,17 @@ class _CardListScreenState extends State<CardListScreen> {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            colors: [Colors.grey[200]!, Colors.grey[400]!],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Color(0xFFD4AF37), // ゴールド
+                            width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black38,
-                              blurRadius: 10,
-                              offset: const Offset(4, 4),
+                              color: Colors.black.withOpacity(0.4),
+                              blurRadius: 6,
+                              offset: Offset(2, 2),
                             ),
                           ],
                         ),
@@ -358,10 +486,10 @@ class _CardListScreenState extends State<CardListScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.white70,
+                                    ),
                                   onPressed: () async {
                                     final confirm = await showDialog<bool>(
                                       context: context,

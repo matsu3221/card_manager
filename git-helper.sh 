@@ -1,0 +1,23 @@
+#!/bin/bash
+# 使い方: ./git-helper.sh ブランチ名 "コミットメッセージ"
+
+BRANCH=$1
+MESSAGE=$2
+
+if [ -z "$BRANCH" ] || [ -z "$MESSAGE" ]; then
+  echo "使い方: ./git-helper.sh ブランチ名 \"コミットメッセージ\""
+  exit 1
+fi
+
+# ブランチ作成（既に存在していればチェックアウト）
+git fetch origin
+if git show-ref --quiet refs/heads/$BRANCH; then
+  git checkout $BRANCH
+else
+  git checkout -b $BRANCH
+fi
+
+# コミットとプッシュ
+git add .
+git commit -m "$MESSAGE"
+git push -u origin $BRANCH
